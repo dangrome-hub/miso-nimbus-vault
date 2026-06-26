@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const claimStartDateInput = document.getElementById('claim-start-date');
     const claimEndDateInput = document.getElementById('claim-end-date');
     const friendNameInput = document.getElementById('friend-name');
-    const friendUnclaimNameInput = document.getElementById('friend-unclaim-name');
     
     const adminSaveBtn = document.getElementById('admin-save-btn');
     const friendClaimBtn = document.getElementById('friend-claim-btn');
@@ -135,9 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTripData = trip;
         tripModal.setAttribute('open', 'true');
         
-        // Reset forms and clean names
-        friendNameInput.value = '';
-        friendUnclaimNameInput.value = '';
+        // Safely reset form names
+        if (friendNameInput) friendNameInput.value = '';
 
         if (isAdmin) {
             // Admin View Layout
