@@ -1,0 +1,201 @@
+/* Custom Wide Workspace Layout Sheet - Button Overlap Fix */
+
+body {
+    background-color: #f8fafc;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding: 1rem !important;
+    margin: 0;
+}
+
+article, .fc {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02) !important;
+}
+
+.header-nav {
+    padding: 0.25rem 1rem !important;
+    margin-bottom: 0.5rem !important;
+}
+.rounded-btn {
+    border-radius: 20px;
+}
+
+/* --- HORIZONTAL TOP COMPACT PROFILE ROW --- */
+.profile-row-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.profile-card {
+    padding: 0.65rem 1rem !important; 
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.apartment-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.avatar-group {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem; 
+    margin-bottom: 0.25rem;
+}
+
+.avatar-meta {
+    text-align: center;
+}
+
+.cat-avatar {
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.border-miso { border-color: #f59e0b; }
+.border-nimbus { border-color: #3b82f6; }
+.border-cecil { border-color: #ec4899; }
+.border-chutney { border-color: #10b981; }
+
+.cat-name {
+    font-size: 0.85rem;
+    font-weight: 700; 
+    margin-top: 0.25rem;
+    color: #1e293b;
+}
+
+.care-link {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0.2rem;
+    color: #4f46e5;
+}
+
+/* --- MAIN SIDE-BY-SIDE INTERACTIVE LAYOUT GRID --- */
+.content-grid {
+    display: grid;
+    grid-template-columns: 310px 1fr !important; 
+    gap: 1rem;
+    align-items: start;
+}
+
+.scrollable-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sidebar-card {
+    padding: 1rem !important;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.admin-helper-box {
+    font-size: 0.75rem;
+    background: rgba(79, 70, 229, 0.06);
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    color: #4338ca;
+}
+
+.sidebar-section-header {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.empty-log-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.calendar-card {
+    padding: 1rem !important;
+}
+
+.neighbor-alert-box {
+    background: #fff7ed;
+    border: 1px solid #ffedd5;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #c2410c;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* --- BUTTON FIXES: Clear Separation and Layout Safeguards --- */
+.fc .fc-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem !important;
+}
+
+/* Prevents the group buttons from squishing up against the year title text */
+.fc .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Adds a nice gap right next to the today button so arrows are separated */
+.fc .fc-today-button {
+    margin-right: 0.5rem !important;
+}
+
+/* --- PHONE VIEWS FALLBACK ONLY --- */
+@media (max-width: 767px) {
+    body {
+        padding: 0.5rem !important;
+    }
+    
+    .profile-row-container {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .content-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .scrollable-sidebar {
+        position: static;
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+}

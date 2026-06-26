@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miso & Nimbus Holiday Cover</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="stylesheet" href="style.css?v=6.0">
+</head>
+<body>
+
+    <header class="container-fluid header-nav">
+        <nav>
+            <ul>
+                <li><strong>🐈 Miso & Nimbus Holiday Cover</strong></li>
+            </ul>
+            <ul>
+                <li><button id="admin-login-btn" class="outline small rounded-btn">Admin Access</button></li>
+                <li><button id="admin-logout-btn" class="contrast small rounded-btn" style="display: none;">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container-fluid main-layout">
+        
+        <section class="profile-row-container">
+            <article class="profile-card">
+                <div class="apartment-label">Our Apartment</div>
+                <div class="avatar-group">
+                    <div class="avatar-meta">
+                        <img src="Miso.png" class="cat-avatar border-miso" alt="Miso">
+                        <div class="cat-name">Miso</div>
+                    </div>
+                    <div class="avatar-meta">
+                        <img src="Nimbus.jpg" class="cat-avatar border-nimbus" alt="Nimbus">
+                        <div class="cat-name">Nimbus</div>
+                    </div>
+                </div>
+                <a href="guide-miso-nimbus.html" target="_blank" class="care-link">📋 View Care Guide →</a>
+            </article>
+
+            <article class="profile-card">
+                <div class="apartment-label">Apartment 34a</div>
+                <div class="avatar-group">
+                    <div class="avatar-meta">
+                        <img src="Cecil.png" class="cat-avatar border-cecil" alt="Cecil">
+                        <div class="cat-name">Cecil</div>
+                    </div>
+                    <div class="avatar-meta">
+                        <img src="Chutney.png" class="cat-avatar border-chutney" alt="Chutney">
+                        <div class="cat-name">Chutney</div>
+                    </div>
+                </div>
+                <a href="guide-cecil-chutney.html" target="_blank" class="care-link">📋 View Care Guide →</a>
+            </article>
+        </section>
+
+        <div class="content-grid">
+            
+            <aside class="scrollable-sidebar">
+                <article class="sidebar-card">
+                    <h5 class="card-title">📅 Trip Schedules</h5>
+                    
+                    <div id="admin-instructions" class="admin-helper-box" style="display: none;">
+                        💡 <strong>Admin Guide:</strong> Click any square on the calendar grid to create blocks.
+                    </div>
+
+                    <div class="sidebar-section-header">🔴 Uncovered Slots</div>
+                    <div id="list-uncovered"><p class="empty-log-text">None listed</p></div>
+
+                    <div class="sidebar-section-header">🟡 Partially Covered</div>
+                    <div id="list-partial"><p class="empty-log-text">None listed</p></div>
+
+                    <div class="sidebar-section-header">🟢 Fully Booked</div>
+                    <div id="list-covered"><p class="empty-log-text">None listed</p></div>
+                </article>
+            </aside>
+
+            <section class="calendar-wrapper">
+                <article class="calendar-card">
+                    <div id="calendar"></div>
+                </article>
+            </section>
+
+        </div>
+    </main>
+
+    <dialog id="trip-modal">
+        <article class="modal-card">
+            <header class="modal-header">
+                <a href="#close" aria-label="Close" class="close" id="close-modal-btn"></a>
+                <h5 id="modal-title" style="margin: 0; font-weight: 700;">Manage Sitting Window</h5>
+            </header>
+            
+            <form id="trip-manager-form" style="margin-top: 1rem; margin-bottom: 0;">
+                <div id="admin-form-fields" style="display: none;">
+                    <label for="trip-title" style="font-size: 0.85rem; font-weight: 600;">Trip Reference Title:
+                        <input type="text" id="trip-title" placeholder="e.g., Summer Getaway 🌴">
+                    </label>
+                    <div class="grid" style="margin-bottom: 0.5rem;">
+                        <div>
+                            <label for="trip-start-date" style="font-size: 0.85rem; font-weight: 600;">Start Date:</label>
+                            <input type="date" id="trip-start-date" required>
+                            <label style="font-size: 0.8rem;">Departure Time:
+                                <input type="time" id="trip-start-time" value="09:00">
+                            </label>
+                        </div>
+                        <div>
+                            <label for="trip-end-date" style="font-size: 0.85rem; font-weight: 600;">End Date:</label>
+                            <input type="date" id="trip-end-date" required>
+                            <label style="font-size: 0.8rem;">Return Time:
+                                <input type="time" id="trip-end-time" value="18:00">
+                            </label>
+                        </div>
+                    </div>
+
+                    <fieldset style="margin-top: 1rem; margin-bottom: 0.5rem; padding: 0.5rem;">
+                        <label for="include-neighbors" style="font-size: 0.85rem; font-weight: 600;">
+                            <input type="checkbox" id="include-neighbors" role="switch"> 🏠 Include 34a (Cecil & Chutney need care too)
+                        </label>
+                    </fieldset>
+
+                    <div id="neighbor-date-fields" style="display: none; background: rgba(236, 72, 153, 0.04); padding: 0.75rem; border-radius: 8px; border: 1px dashed rgba(236, 72, 153, 0.2); margin-bottom: 1rem;">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #ec4899; text-transform: uppercase; margin-bottom: 0.5rem;">🗓️ Cecil & Chutney Care Window</div>
+                        <div class="grid" style="margin-bottom: 0;">
+                            <label style="font-size: 0.8rem; font-weight: 600;">Care Starts:
+                                <input type="date" id="neighbor-start-date">
+                            </label>
+                            <label style="font-size: 0.8rem; font-weight: 600;">Care Ends:
+                                <input type="date" id="neighbor-end-date">
+                            </label>
+                        </div>
+                    </div>
+
+                    <label for="trip-notes" style="font-size: 0.85rem; font-weight: 600; margin-top: 1rem;">Custom Instructions:
+                        <textarea id="trip-notes" placeholder="Feeding routines, arrival details..." rows="2"></textarea>
+                    </label>
+                    <button type="button" id="admin-save-btn" style="background: var(--primary); font-weight: 600;">💾 Save Holiday Block</button>
+                </div>
+
+                <div id="public-trip-details" style="display: none;">
+                    <div id="neighbor-alert" class="neighbor-alert-box" style="display: none;">
+                        🚨 NOTE: Cecil & Chutney (from 34a upstairs) also need care during this trip from <span id="text-neighbor-start"></span> to <span id="text-neighbor-end"></span>! Please check in on their flat and feed them.
+                    </div>
+
+                    <div id="modal-details-text" style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.6;"></div>
+                    
+                    <div id="friend-claim-section" style="display: none;">
+                        <h6 style="font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.75rem; color: #4f46e5; font-weight: 700;">🐾 Choose What Dates You Can Cover</h6>
+                        
+                        <div class="grid" style="margin-bottom: 1rem;">
+                            <label for="claim-start-date" style="font-size: 0.8rem; font-weight: 600;">My Start Date:
+                                <input type="date" id="claim-start-date">
+                            </label>
+                            <label for="claim-end-date" style="font-size: 0.8rem; font-weight: 600;">My End Date:
+                                <input type="date" id="claim-end-date">
+                            </label>
+                        </div>
+
+                        <label for="friend-name" style="font-size: 0.85rem; font-weight: 600;">Your Name:
+                            <input type="text" id="friend-name" placeholder="e.g., Sarah ✨">
+                        </label>
+                        
+                        <fieldset style="padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 1rem;">
+                            <label for="sync-intent" style="font-size: 0.85rem; margin-bottom: 0.25rem;">
+                                <input type="radio" id="sync-intent" name="sync-method" value="intent" checked> Add to my calendar via quick Link
+                            </label>
+                        </fieldset>
+                        
+                        <button type="button" id="friend-claim-btn" class="success" style="font-weight: 600; width: 100%;">Lock in My Cover Shift 🐾</button>
+                    </div>
+                </div>
+
+                <div id="modal-admin-actions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
+                    <button type="button" id="delete-trip-btn" class="secondary outline" style="width: 100%; border-radius: 8px; font-size: 0.85rem;">🗑️ Delete Entire Trip Block</button>
+                </div>
+            </form>
+        </article>
+    </dialog>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/calendar.js"></script>
+</body>
+</html>
