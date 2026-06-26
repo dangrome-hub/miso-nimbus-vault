@@ -1,303 +1,133 @@
-/* Custom Wide Workspace Layout Sheet - Glassmorphism UI */
+/* Premium Glassmorphism UI - Pico Override Core Patch */
 
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-bg: rgba(255, 255, 255, 0.65) !important;
+    --glass-border: rgba(255, 255, 255, 0.8) !important;
     --primary-brand: #4f46e5;
     --text-main: #0f172a;
     --text-muted: #64748b;
 }
 
+/* Force body reset over Pico defaults */
 body {
-    background-color: #eef2f6;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: linear-gradient(135deg, #eef2f6 0%, #dfe7f0 100%) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
     padding: 1.5rem !important;
-    margin: 0;
+    margin: 0 !important;
     min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-    color: var(--text-main);
+    color: var(--text-main) !important;
 }
 
-/* --- AMBIENT BLOBS (Smooth Background Accents) --- */
-.ambient-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-}
-.blob {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    animation: floatAround 20s infinite alternate ease-in-out;
-}
-.blob-1 {
-    background-color: #bfdbfe;
-    top: -10%;
-    right: -10%;
-}
-.blob-2 {
-    background-color: #fbcfe8;
-    bottom: -10%;
-    left: -5%;
-    animation-delay: -10s;
-}
-@keyframes floatAround {
-    0% { transform: translate(0px, 0px) scale(1); }
-    100% { transform: translate(60px, 40px) scale(1.15); }
-}
-
-/* --- GLASS CONTAINER CLASS --- */
-.premium-glass {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid var(--glass-border) !important;
+/* --- OVERRIDE PICO'S DEFAULT ARTICLE BLOCKS --- */
+article, 
+.profile-card, 
+.sidebar-card, 
+.calendar-card {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(20px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
     border-radius: 24px !important;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.intense-blur {
-    backdrop-filter: blur(30px) !important;
-    -webkit-backdrop-filter: blur(30px) !important;
-}
-
-/* --- HEADER AND NAVIGATION --- */
-.header-nav {
-    padding: 0.5rem 1.5rem !important;
-    margin-bottom: 1.5rem !important;
-    background: rgba(255, 255, 255, 0.3) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.4);
-}
-.brand-title {
-    font-size: 1.15rem;
-    letter-spacing: -0.02em;
-    color: var(--text-main);
-}
-.rounded-btn {
-    border-radius: 24px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.5rem 1.25rem;
-}
-.admin-trigger {
-    background: var(--primary-brand);
-    border-color: var(--primary-brand);
-}
-
-/* --- HORIZONTAL DYNAMIC PROFILE ROW --- */
-.profile-row-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.profile-card {
-    padding: 1.25rem !important; 
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.profile-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.07) !important;
-}
-.apartment-label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.75rem;
-}
-.avatar-group {
-    display: flex;
-    justify-content: center;
-    gap: 3rem; 
-    margin-bottom: 0.5rem;
-}
-
-/* --- HEXAGON GENERATOR MASK --- */
-.hex-wrap {
-    width: 105px;
-    height: 105px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    padding: 4px;
-    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5%, 75%, 5% 25%);
-    filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.1));
-}
-.cat-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5%, 75%, 5% 25%);
-}
-
-/* Color-coded outer borders */
-.hex-wrap.border-miso { background: #f59e0b; }
-.hex-wrap.border-nimbus { background: #3b82f6; }
-.hex-wrap.border-cecil { background: #ec4899; }
-.hex-wrap.border-chutney { background: #10b981; }
-
-.cat-name {
-    font-size: 0.9rem;
-    font-weight: 700; 
-    margin-top: 0.5rem;
-    color: var(--text-main);
-}
-.care-link {
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 0.5rem;
-    color: var(--primary-brand);
-    transition: opacity 0.2s;
-}
-.care-link:hover { opacity: 0.8; text-decoration: underline; }
-
-/* --- SIDE-BY-SIDE MAIN CONTAINER GRID --- */
-.content-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr !important; 
-    gap: 1.5rem;
-    align-items: start;
-}
-.sidebar-card, .calendar-card {
+    margin-bottom: 0 !important; /* Strips Pico's heavy bottom margin */
     padding: 1.5rem !important;
 }
-.card-title {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    color: var(--text-main);
-}
-.admin-helper-box {
-    font-size: 0.8rem;
-    background: rgba(79, 70, 229, 0.08);
-    padding: 0.75rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-    color: #4338ca;
-    border: 1px solid rgba(79, 70, 229, 0.15);
+
+/* --- RE-ALIGN THE TOP COMPACT PROFILE ROW --- */
+.profile-row-container {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
 }
 
-/* --- BADGES & LIST LAYOUTS --- */
-.sidebar-section-header {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    font-weight: 800;
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
-    border-radius: 6px;
-}
-.status-uncovered { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
-.status-partial { background: rgba(245, 158, 11, 0.1); color: #d97706; }
-.status-covered { background: rgba(16, 185, 129, 0.1); color: #059669; }
-
-.status-list-container {
-    background: rgba(255,255,255,0.2);
-    border-radius: 12px;
-    padding: 0.5rem;
-    margin-bottom: 0.75rem;
-    border: 1px solid rgba(0,0,0,0.02);
-}
-.empty-log-text {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin: 0;
-    padding: 0.25rem;
+.profile-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
 }
 
-/* --- COMPACT INTERACTIVE CALENDAR OVERRIDES --- */
+.avatar-group {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 2rem !important;
+    margin: 1rem 0 !important;
+}
+
+/* --- CLEAN COMPACT HEXAGON CLIPPING --- */
+.hex-wrap {
+    width: 100px !important;
+    height: 100px !important;
+    position: relative;
+    padding: 3px !important;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.cat-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%) !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+/* Color rings around hexagons */
+.hex-wrap.border-miso { background: #f59e0b !important; }
+.hex-wrap.border-nimbus { background: #3b82f6 !important; }
+.hex-wrap.border-cecil { background: #ec4899 !important; }
+.hex-wrap.border-chutney { background: #10b981 !important; }
+
+/* --- TWO COLUMN MAIN LAYOUT GRID --- */
+.content-grid {
+    display: grid !important;
+    grid-template-columns: 340px 1fr !important;
+    gap: 1.5rem !important;
+    margin-top: 1.5rem !important;
+}
+
+/* --- APP CLEANUPS --- */
+.apartment-label {
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+}
+
+.cat-name {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    margin-top: 0.5rem !important;
+}
+
+.care-link {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    color: var(--primary-brand) !important;
+    text-decoration: none !important;
+}
+
+/* --- FULLCALENDAR BASE OVERRIDES --- */
 .fc {
     background: transparent !important;
-    border: none !important;
 }
 .fc-theme-standard td, .fc-theme-standard th {
     border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
-.fc .fc-cell-shaded {
-    background: rgba(0,0,0,0.02) !important;
-}
-.fc .fc-toolbar-title {
-    font-size: 1.25rem !important;
-    font-weight: 700;
-    color: var(--text-main);
-}
-.fc .fc-button-primary {
-    background-color: rgba(255,255,255,0.6) !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
-    color: var(--text-main) !important;
-    border-radius: 8px !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-}
-.fc .fc-button-primary:hover {
-    background-color: var(--primary-brand) !important;
-    color: white !important;
-}
-.fc .fc-today-button {
-    margin-right: 0.75rem !important;
-    background-color: rgba(79, 70, 229, 0.1) !important;
-    color: var(--primary-brand) !important;
-    border: none !important;
-}
 
-/* --- MISC UI COMPONENTS --- */
-.neighbor-alert-box {
-    background: rgba(251, 146, 60, 0.12);
-    border: 1px solid rgba(251, 146, 60, 0.3);
-    padding: 0.85rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    color: #c2410c;
-    margin-bottom: 1.25rem;
-}
-.brand-btn {
-    border-radius: 12px !important;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-}
-
-/* --- MOBILE BREAKPOINT ENGINE (No more separate views!) --- */
+/* --- RESPONSIVE MOBILE ENGINE --- */
 @media (max-width: 991px) {
-    body {
-        padding: 0.75rem !important;
-    }
     .profile-row-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr !important;
     }
     .content-grid {
         grid-template-columns: 1fr !important;
-        gap: 1rem;
-    }
-    .hex-wrap {
-        width: 90px;
-        height: 90px;
-    }
-    .avatar-group {
-        gap: 1.5rem;
     }
 }
