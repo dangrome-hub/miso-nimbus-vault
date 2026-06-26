@@ -1,15 +1,19 @@
 // js/calendar.js
 
-// Ensure supabase is mapped properly even if config loaded slightly out of order
+// Ensure supabase is mapped properly
 window.supabase = window.supabaseClientInstance || window.supabase;
 let calendar;
+let globalIsAdmin = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     initCalendar();
+    
+    // Listen for the login toggle from app.js
     document.addEventListener('authChange', (e) => {
+        globalIsAdmin = e.detail.isAdmin;
         if (calendar) {
-            calendar.setOption('selectable', e.detail.isAdmin);
-            calendar.setOption('editable', e.detail.isAdmin);
+            calendar.setOption('selectable', globalIsAdmin);
+            calendar.setOption('editable', globalIsAdmin);
             calendar.refetchEvents();
         }
     });
@@ -37,15 +41,6 @@ let globalTripsData = [];
 async function initCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
-
-    // Use a safe fallback for checking the session in case window object isn't fully ready
-    const activeSupabase = window.supabaseClientInstance || window.supabase;
-    let isAdmin = false;
-    
-    if (activeSupabase && activeSupabase.auth) {
-        const sessionCheck = await activeSupabase.auth.getSession();
-        isAdmin = !!sessionCheck.data.session;
-    }
 
     const today = new Date();
     const validRangeStart = `${today.getFullYear() - 2}-01-01`;
@@ -80,8 +75,8 @@ async function initCalendar() {
         },
         multiMonthTitleFormat: { month: 'long', year: 'numeric' },
         
-        selectable: isAdmin,
-        editable: isAdmin,
+        selectable: globalIsAdmin,
+        editable: globalIsAdmin,
         
         events: async function(fetchInfo, successCallback, failureCallback) {
             try {
@@ -115,7 +110,11 @@ async function initCalendar() {
                     if (eTimeRaw === 'evening') eTimeRaw = '18:00';
                     
                     const startISO = `${trip.start_date}T${sTimeRaw}:00`;
-                    const endISO = `${trip.end_date}T${eTimeRaw}:00`;
+                    
+                    // FullCalendar exclusive end date logic
+                    let endObj = new Date(trip.end_date + 'T00:00:00');
+                    endObj.setDate(endObj.getDate() + 1);
+                    const endISO = `${endObj.toISOString().split('T')[0]}T${eTimeRaw}:00`;
                     
                     const sTimeFormatted = formatTimeLabel(trip.start_time);
                     const eTimeFormatted = formatTimeLabel(trip.end_time);
@@ -140,17 +139,7 @@ async function initCalendar() {
                         backgroundColor: bg,
                         borderColor: bg,
                         extendedProps: {
-                            tripTitle: trip.title,
-                            status: trip.status,
-                            claimedBy: trip.claimed_by,
-                            notes: trip.notes,
-                            rawStartDate: trip.start_date,
-                            rawEndDate: trip.end_date,
-                            startTime: sTimeRaw,
-                            endTime: eTimeRaw,
-                            includeNeighbors: trip.include_neighbors,
-                            neighborStartDate: trip.neighbor_start_date,
-                            neighborEndDate: trip.neighbor_end_date
+                            rawTripData: trip // Clean database object payload
                         }
                     };
                 });
@@ -227,38 +216,43 @@ async function initCalendar() {
             if (new Date(cleanEndDate) < new Date(cleanStartDate)) cleanEndDate = cleanStartDate;
 
             if (window.openTripModal) {
+                // Pass a clean fake DB object to app.js
                 window.openTripModal({
                     id: null,
-                    start: cleanStartDate,
-                    end: cleanEndDate,
-                    extendedProps: { tripTitle: '', status: 'unclaimed', claimedBy: null, notes: '', startTime: '09:00', endTime: '18:00', includeNeighbors: false, neighborStartDate: null, neighborEndDate: null }
+                    title: 'Away Block 🌴',
+                    start_date: cleanStartDate,
+                    end_date: cleanEndDate,
+                    start_time: '09:00',
+                    end_time: '18:00',
+                    include_neighbors: false,
+                    status: 'uncovered'
                 });
             }
             calendar.unselect();
         },
 
         dateClick: function(info) {
-            if (!calendar.getOption('selectable')) return;
+            if (!globalIsAdmin) return;
 
             const cleanStartDate = info.dateStr;
             if (window.openTripModal) {
                 window.openTripModal({
                     id: null,
-                    start: cleanStartDate,
-                    end: cleanStartDate,
-                    extendedProps: { tripTitle: '', status: 'unclaimed', claimedBy: null, notes: '', startTime: '09:00', endTime: '18:00', includeNeighbors: false, neighborStartDate: null, neighborEndDate: null }
+                    title: 'Away Block 🌴',
+                    start_date: cleanStartDate,
+                    end_date: cleanStartDate,
+                    start_time: '09:00',
+                    end_time: '18:00',
+                    include_neighbors: false,
+                    status: 'uncovered'
                 });
             }
         },
 
         eventClick: function(clickInfo) {
             if (window.openTripModal) {
-                window.openTripModal({
-                    id: clickInfo.event.id,
-                    start: clickInfo.event.extendedProps.rawStartDate,
-                    end: clickInfo.event.extendedProps.rawEndDate,
-                    extendedProps: clickInfo.event.extendedProps
-                });
+                // Pass the clean database object stored inside the event
+                window.openTripModal(clickInfo.event.extendedProps.rawTripData);
             }
         }
     });

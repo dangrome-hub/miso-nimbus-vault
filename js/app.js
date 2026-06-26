@@ -143,9 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Admin View Layout
             adminFormFields.style.display = 'block';
             publicTripDetails.style.display = 'none';
-            modalAdminActions.style.display = trip ? 'block' : 'none';
+            modalAdminActions.style.display = (trip && trip.id) ? 'block' : 'none';
             
-            document.getElementById('modal-title').innerText = trip ? '✏️ Edit Away Window' : '➕ Create Away Window';
+            document.getElementById('modal-title').innerText = (trip && trip.id) ? '✏️ Edit Away Window' : '➕ Create Away Window';
             
             tripTitleInput.value = trip ? trip.title || '' : '';
             tripStartDateInput.value = trip ? trip.start_date : '';
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             publicTripDetails.style.display = 'block';
             modalAdminActions.style.display = 'none';
             
-            if (!trip) {
+            if (!trip || !trip.start_date) {
                 document.getElementById('modal-title').innerText = '🐈 Miso & Nimbus';
                 document.getElementById('modal-details-text').innerHTML = 'Please click on a highlighted trip block on the calendar to see trip details or book a sitting shift.';
                 friendClaimSection.style.display = 'none';
@@ -230,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
             neighbor_start_date: includeNeighborsInput.checked ? neighborStartDateInput.value : null,
             neighbor_end_date: includeNeighborsInput.checked ? neighborEndDateInput.value : null,
             notes: tripNotesInput.value,
-            status: activeTripData ? activeTripData.status : 'uncovered',
-            claimed_by: activeTripData ? activeTripData.claimed_by : null
+            status: (activeTripData && activeTripData.id) ? activeTripData.status : 'uncovered',
+            claimed_by: (activeTripData && activeTripData.id) ? activeTripData.claimed_by : null
         };
 
         if (!payload.start_date || !payload.end_date) {
@@ -280,20 +280,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Logic checks for splitting/partial booking dates
         const chosenStart = claimStartDateInput.value;
         const chosenEnd = claimEndDateInput.value;
         
         let targetStatus = 'claimed';
         if (chosenStart > activeTripData.start_date || chosenEnd < activeTripData.end_date) {
-            targetStatus = 'partial'; // Partial flag if friend only splits a piece
+            targetStatus = 'partial'; 
         }
 
         const { error } = await supabase.from('trips')
             .update({
                 status: targetStatus,
                 claimed_by: friendName,
-                // Update dates to match assignment if partial split strategy is deployed
             })
             .eq('id', activeTripData.id);
 
@@ -302,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Handle Calendar Sync preferences
         const selectedSyncMethod = document.querySelector('input[name="sync-method"]:checked').value;
         if (selectedSyncMethod === 'intent') {
             triggerGoogleCalendarWebIntent(activeTripData, friendName);
@@ -343,7 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const sDate = trip.start_date.replace(/-/g, '');
         const eDate = trip.end_date.replace(/-/g, '');
-        // Formats to Google UTC string standards (YYYYMMDD)
         const dates = `${sDate}/${eDate}`;
 
         let details = `Hi ${friendName}, thank you for helping out!\n\n`;
@@ -357,16 +353,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(url, '_blank');
     }
 
-    // Option A: Full OAuth Injection Placeholder Interface
     function triggerOAuthCalendarInsertion(trip, friendName) {
         alert("Authentication initialization sequence. Option A will log into Google API and insert direct calendar details directly.");
-        // OAuth execution code hooks in here
     }
 
-    // Auth Simulation toggles for setting Admin state
+    // Auth Simulation toggles
     adminLoginBtn.addEventListener('click', () => {
         const password = prompt("Enter Admin Secure Verification Token:");
-        if (password === "misonimbus") { // Change to your password configuration
+        if (password === "misonimbus") { 
             isAdmin = true;
             adminLoginBtn.style.display = 'none';
             adminLogoutBtn.style.display = 'inline-block';
@@ -387,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Logged out of Admin Session.");
     });
 
-    // Date Helper Formatting Functions
     function formatReadableDate(dateString) {
         if (!dateString) return '';
         const options = { month: 'short', day: 'numeric' };
@@ -404,6 +397,5 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${displayHour}:${minutes} ${ampm}`;
     }
 
-    // Init Core State
     updateSidebarNeedsCoverList();
 });
