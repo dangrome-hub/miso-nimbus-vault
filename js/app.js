@@ -229,8 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
             neighbor_end_date: includeNeighborsInput.checked ? neighborEndDateInput.value : null,
             notes: tripNotesInput.value,
             
-            // THE FIX: Sanitize the status to 'uncovered' for all new blocks
-            status: (activeTripData && activeTripData.id && activeTripData.status !== 'unclaimed') ? activeTripData.status : 'uncovered',
+            // Default new blocks to a DB-safe status value.
+            status: (activeTripData && activeTripData.id) ? activeTripData.status : 'unclaimed',
             claimed_by: (activeTripData && activeTripData.id) ? activeTripData.claimed_by : null
         };
 
