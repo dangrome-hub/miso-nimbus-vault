@@ -228,7 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
             neighbor_start_date: includeNeighborsInput.checked ? neighborStartDateInput.value : null,
             neighbor_end_date: includeNeighborsInput.checked ? neighborEndDateInput.value : null,
             notes: tripNotesInput.value,
-            status: (activeTripData && activeTripData.id) ? activeTripData.status : 'uncovered',
+            
+            // THE FIX: Sanitize the status to 'uncovered' for all new blocks
+            status: (activeTripData && activeTripData.id && activeTripData.status !== 'unclaimed') ? activeTripData.status : 'uncovered',
             claimed_by: (activeTripData && activeTripData.id) ? activeTripData.claimed_by : null
         };
 
