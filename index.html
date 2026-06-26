@@ -14,7 +14,7 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="style.css?v=6.0">
+    <link rel="stylesheet" href="style.css?v=7.0">
 </head>
 <body>
 
@@ -41,7 +41,7 @@
                         <div class="cat-name">Miso</div>
                     </div>
                     <div class="avatar-meta">
-                        <img src="Nimbus.jpg" class="cat-avatar border-nimbus" alt="Nimbus">
+                        <img src="Nimbus.png" class="cat-avatar border-nimbus" alt="Nimbus">
                         <div class="cat-name">Nimbus</div>
                     </div>
                 </div>
@@ -170,9 +170,13 @@
                             <input type="text" id="friend-name" placeholder="e.g., Sarah ✨">
                         </label>
                         
-                        <fieldset style="padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 1rem;">
-                            <label for="sync-intent" style="font-size: 0.85rem; margin-bottom: 0.25rem;">
-                                <input type="radio" id="sync-intent" name="sync-method" value="intent" checked> Add to my calendar via quick Link
+                        <fieldset style="padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 1rem;">
+                            <legend style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">📅 Calendar Sync Method</legend>
+                            <label for="sync-method-intent" style="font-size: 0.85rem; margin-bottom: 0.5rem;">
+                                <input type="radio" id="sync-method-intent" name="sync-method" value="intent" checked> 🚀 Option B: Quick Browser Link (No Login)
+                            </label>
+                            <label for="sync-method-oauth" style="font-size: 0.85rem; margin-bottom: 0;">
+                                <input type="radio" id="sync-method-oauth" name="sync-method" value="oauth"> 🔒 Option A: Auto-Add via Google Sign-In
                             </label>
                         </fieldset>
                         

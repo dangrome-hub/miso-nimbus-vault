@@ -1,7 +1,7 @@
 // js/app.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Fallback to whichever global assignment finished initializing first
+    // Fallback assignment layers matching dynamic engine hooks safely
     const supabase = window.supabaseClientInstance || window.supabase;
     
     const adminLoginBtn = document.getElementById('admin-login-btn');
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeTripData = null;
 
     if (!supabase) {
-        console.error("Supabase instance was missing during app.js initialization step.");
+        console.error("Supabase engine setup was missing during script compilation.");
         return;
     }
 
@@ -257,6 +257,67 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal(); window.refreshCalendarData();
     });
 
+    /**
+     * Option B: Pre-filled Web Intent Calendar Sync
+     */
+    function triggerGoogleCalendarIntent(title, startDate, endDate, notes) {
+        const cleanString = (dStr) => dStr.replace(/-/g, '');
+        const startISO = cleanString(startDate);
+        
+        const nextDay = new Date(new Date(endDate + 'T00:00:00').setDate(new Date(endDate + 'T00:00:00').getDate() + 1));
+        const endISO = cleanString(nextDay.toISOString().split('T')[0]);
+        
+        const eventTitle = encodeURIComponent(`🐈 Miso & Nimbus Cat Sitting: ${title}`);
+        const eventDetails = encodeURIComponent(`${notes || 'No instructions provided.'}\n\n📋 Care Guides: https://miso-nimbus-vault.vercel.app`);
+        
+        const intentUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startISO}/${endISO}&details=${eventDetails}&sf=true&output=xml`;
+        window.open(intentUrl, '_blank');
+    }
+
+    /**
+     * Option A: Interactive Google OAuth2 API client
+     */
+    function handleGoogleOAuthSync(title, startDate, endDate, notes) {
+        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+
+        if (CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
+            alert("Google OAuth2 client credentials not provisioned. Opening Option B quick-link instead!");
+            triggerGoogleCalendarIntent(title, startDate, endDate, notes);
+            return;
+        }
+
+        const client = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            callback: async (tokenResponse) => {
+                if (tokenResponse.error !== undefined) return;
+
+                const eventPayload = {
+                    'summary': `🐈 Miso & Nimbus Cat Sitting: ${title}`,
+                    'description': `${notes || ''}\n\n📋 Care Guide URL: https://miso-nimbus-vault.vercel.app`,
+                    'start': { 'date': startDate, 'timeZone': 'Europe/London' },
+                    'end': { 'date': endDate, 'timeZone': 'Europe/London' }
+                };
+
+                try {
+                    const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${tokenResponse.access_token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(eventPayload)
+                    });
+                    if (res.ok) alert("🎉 Success! This shifting slot has been synced to your calendar.");
+                } catch (err) {
+                    triggerGoogleCalendarIntent(title, startDate, endDate, notes);
+                }
+            }
+        });
+        client.requestAccessToken({ prompt: 'consent' });
+    }
+
     friendClaimBtn.addEventListener('click', async () => {
         const name = friendNameInput.value.trim(), cs = claimStartDateInput.value, ce = claimEndDateInput.value;
         if (!name) { alert("Please supply your name."); return; }
@@ -279,6 +340,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 await supabase.from('trips').insert([{ title: pProps.tripTitle, start_date: nextStart, end_date: parentEnd, status: 'unclaimed', notes: pProps.notes, start_time: '09:00', end_time: pProps.endTime, include_neighbors: pProps.includeNeighbors, neighbor_start_date: pProps.neighborStartDate, neighbor_end_date: pProps.neighborEndDate }]);
             }
         }
+
+        // Fire calendar integration sync paths based on radio settings
+        const syncMethod = document.querySelector('input[name="sync-method"]:checked').value;
+        const finalTitle = pProps.tripTitle || 'Away Block';
+        const finalNotes = pProps.notes || '';
+
+        if (syncMethod === 'oauth') {
+            handleGoogleOAuthSync(finalTitle, cs, ce, finalNotes);
+        } else {
+            triggerGoogleCalendarIntent(finalTitle, cs, ce, finalNotes);
+        }
+
         closeModal(); 
         window.refreshCalendarData();
     });
