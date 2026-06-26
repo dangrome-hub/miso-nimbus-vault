@@ -2,7 +2,7 @@
 
 // 1. Assign your exact credentials to clean, constant strings
 const SUPABASE_URL = 'https://gjdczaceodcnhsqeorsk.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_7QGFbwDQokWf05q8SIq_3Q_04SQnr2h';
+const SUPABASE_ANON_KEY = 'sb_publishable_7qGFbwDQokWf05q8SIq_3Q_04SQnr2h';
 
 // 2. Safely initialize the global Supabase client object instance
 const supabaseClientInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
