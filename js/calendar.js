@@ -226,24 +226,40 @@ async function initCalendar() {
             if (cleanStartDate !== selectionInfo.endStr) cleanEndDate = subtractOneDay(selectionInfo.endStr);
             if (new Date(cleanEndDate) < new Date(cleanStartDate)) cleanEndDate = cleanStartDate;
 
-            document.dispatchEvent(new CustomEvent('openTripModal', {
-                detail: {
-                    id: null, start: cleanStartDate, end: cleanEndDate,
+            if (window.openTripModal) {
+                window.openTripModal({
+                    id: null,
+                    start: cleanStartDate,
+                    end: cleanEndDate,
                     extendedProps: { tripTitle: '', status: 'unclaimed', claimedBy: null, notes: '', startTime: '09:00', endTime: '18:00', includeNeighbors: false, neighborStartDate: null, neighborEndDate: null }
-                }
-            }));
+                });
+            }
             calendar.unselect();
         },
 
+        dateClick: function(info) {
+            if (!calendar.getOption('selectable')) return;
+
+            const cleanStartDate = info.dateStr;
+            if (window.openTripModal) {
+                window.openTripModal({
+                    id: null,
+                    start: cleanStartDate,
+                    end: cleanStartDate,
+                    extendedProps: { tripTitle: '', status: 'unclaimed', claimedBy: null, notes: '', startTime: '09:00', endTime: '18:00', includeNeighbors: false, neighborStartDate: null, neighborEndDate: null }
+                });
+            }
+        },
+
         eventClick: function(clickInfo) {
-            document.dispatchEvent(new CustomEvent('openTripModal', { 
-                detail: { 
+            if (window.openTripModal) {
+                window.openTripModal({
                     id: clickInfo.event.id,
                     start: clickInfo.event.extendedProps.rawStartDate,
                     end: clickInfo.event.extendedProps.rawEndDate,
                     extendedProps: clickInfo.event.extendedProps
-                } 
-            }));
+                });
+            }
         }
     });
     calendar.render();
