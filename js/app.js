@@ -317,18 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Friend UNCLAIM/CANCEL Logic
     friendUnclaimBtn.addEventListener('click', async () => {
-        const verifyName = friendUnclaimNameInput.value.trim();
-        if (!verifyName) {
-            alert('Please enter your name exactly as booked to cancel this shift.');
-            return;
-        }
-
-        if (verifyName.toLowerCase() !== activeTripData.claimed_by.toLowerCase()) {
-            alert(`Name match fail. This block is currently claimed by "${activeTripData.claimed_by}". Please double check your spelling.`);
-            return;
-        }
-
-        if (!confirm('Confirm you want to cancel your shift? This will reopen the slot for other friends immediately.')) return;
+        if (!confirm('Confirm you want to cancel this shift? This will reopen the slot for other friends immediately.')) return;
 
         const { error } = await supabase.from('trips')
             .update({
@@ -382,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adminLoginBtn.style.display = 'none';
             adminLogoutBtn.style.display = 'inline-block';
             adminInstructions.style.display = 'block';
+            document.dispatchEvent(new CustomEvent('authChange', { detail: { isAdmin } }));
             alert("Admin session authenticated.");
         } else {
             alert("Invalid password clearance credentials.");
@@ -393,6 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminLoginBtn.style.display = 'inline-block';
         adminLogoutBtn.style.display = 'none';
         adminInstructions.style.display = 'none';
+        document.dispatchEvent(new CustomEvent('authChange', { detail: { isAdmin } }));
         alert("Logged out of Admin Session.");
     });
 

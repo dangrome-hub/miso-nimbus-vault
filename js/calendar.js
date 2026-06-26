@@ -47,26 +47,41 @@ async function initCalendar() {
         isAdmin = !!sessionCheck.data.session;
     }
 
+    const today = new Date();
+    const validRangeStart = `${today.getFullYear() - 2}-01-01`;
+    const validRangeEnd = `${today.getFullYear() + 15}-01-01`;
+
     calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'multiMonthYear',
-        multiMonthMaxColumns: 1, 
-        
+        initialView: 'multiMonth',
+        initialDate: today,
+        views: {
+            multiMonth: {
+                duration: { months: 18 },
+                dateIncrement: { months: 1 }
+            }
+        },
+        multiMonthMaxColumns: 1,
+        customButtons: {
+            goToday: {
+                text: 'Today',
+                click: () => {
+                    if (calendar) calendar.today();
+                }
+            }
+        },
         headerToolbar: {
-            left: 'today prev,next',
+            left: 'goToday prev,next',
             center: 'title',
             right: ''
         },
-        buttonText: {
-            today: 'Today' // Explicitly sets the button string capitalization
-        },
         validRange: {
-            start: '2026-01-01',
-            end: '2041-01-01'
+            start: validRangeStart,
+            end: validRangeEnd
         },
         multiMonthTitleFormat: { month: 'long', year: 'numeric' },
         
-        selectable: isAdmin,     
-        editable: isAdmin,       
+        selectable: isAdmin,
+        editable: isAdmin,
         
         events: async function(fetchInfo, successCallback, failureCallback) {
             try {
