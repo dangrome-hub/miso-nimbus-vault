@@ -1,9 +1,8 @@
 // js/app.js
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Fallback assignment layers matching dynamic engine hooks safely
     const supabase = window.supabaseClientInstance || window.supabase;
     
+    // UI Elements
     const adminLoginBtn = document.getElementById('admin-login-btn');
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
     const adminInstructions = document.getElementById('admin-instructions');
@@ -13,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminFormFields = document.getElementById('admin-form-fields');
     const publicTripDetails = document.getElementById('public-trip-details');
     const friendClaimSection = document.getElementById('friend-claim-section');
+    const friendUnclaimSection = document.getElementById('friend-unclaim-section');
     const modalAdminActions = document.getElementById('modal-admin-actions');
     const neighborAlert = document.getElementById('neighbor-alert');
     const neighborDateFields = document.getElementById('neighbor-date-fields');
@@ -29,19 +29,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const claimStartDateInput = document.getElementById('claim-start-date');
     const claimEndDateInput = document.getElementById('claim-end-date');
     const friendNameInput = document.getElementById('friend-name');
+    const friendUnclaimNameInput = document.getElementById('friend-unclaim-name');
     
     const adminSaveBtn = document.getElementById('admin-save-btn');
     const friendClaimBtn = document.getElementById('friend-claim-btn');
+    const friendUnclaimBtn = document.getElementById('friend-unclaim-btn');
     const deleteTripBtn = document.getElementById('delete-trip-btn');
     const tripNotesInput = document.getElementById('trip-notes');
     
     let activeTripData = null;
+    let isAdmin = false;
 
     if (!supabase) {
-        console.error("Supabase engine setup was missing during script compilation.");
+        console.error("Supabase engine connection fault.");
         return;
     }
 
+    // Toggle Neighbor UI on Switch Click
     includeNeighborsInput.addEventListener('change', () => {
         if (includeNeighborsInput.checked) {
             neighborDateFields.style.display = 'block';
@@ -52,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Sidebar Builder & Feed
     async function updateSidebarNeedsCoverList() {
         const listUncovered = document.getElementById('list-uncovered');
         const listPartial = document.getElementById('list-partial');
@@ -94,265 +99,320 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const itemCard = `
-                <div class="sidebar-item" data-package="${dataPackage}" style="${colorStyle} padding: 0.65rem; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.8rem;">
-                    <div style="display:flex; justify-content:space-between; font-weight:600;">
-                        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">${title}</span> <span style="opacity:0.8;">${badgeText}</span>
+                <div class="sidebar-item" style="${colorStyle} margin-bottom: 0.75rem; padding: 0.5rem; border-radius: 6px; cursor: pointer;" onclick="window.openTripModalFromSidebar('${dataPackage}')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #1e293b;">${title}</span>
+                        <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.05);">${badgeText}</span>
                     </div>
-                    <div style="margin-top:2px; color:#64748b;">${startFormatted} (${sTimeDisplay}) - ${endFormatted} (${eTimeDisplay})</div>
+                    <div style="font-size: 0.75rem; color: #475569;">
+                        📅 ${startFormatted} (${sTimeDisplay}) → ${endFormatted} (${eTimeDisplay})
+                    </div>
                 </div>
             `;
-            if (trip.status === 'unclaimed') uncoveredHtml += itemCard;
-            else if (trip.status === 'partial') partialHtml += itemCard;
-            else if (trip.status === 'claimed') coveredHtml += itemCard;
+
+            if (trip.status === 'claimed') {
+                coveredHtml += itemCard;
+            } else if (trip.status === 'partial') {
+                partialHtml += itemCard;
+            } else {
+                uncoveredHtml += itemCard;
+            }
         });
 
-        listUncovered.innerHTML = uncoveredHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">🎉 Fully filled!</p>`;
-        listPartial.innerHTML = partialHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">No active splits.</p>`;
-        listCovered.innerHTML = coveredHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">No departures set.</p>`;
-
-        document.querySelectorAll('.sidebar-item').forEach(el => {
-            el.addEventListener('click', () => {
-                const trip = JSON.parse(decodeURIComponent(el.getAttribute('data-package')));
-                document.dispatchEvent(new CustomEvent('openTripModal', {
-                    detail: {
-                        id: trip.id, start: trip.start_date, end: trip.end_date,
-                        extendedProps: { 
-                            tripTitle: trip.title, status: trip.status, claimedBy: trip.claimed_by, notes: trip.notes, 
-                            rawStartDate: trip.start_date, rawEndDate: trip.end_date, startTime: trip.start_time, endTime: trip.end_time, 
-                            includeNeighbors: trip.include_neighbors, neighborStartDate: trip.neighbor_start_date, neighborEndDate: trip.neighbor_end_date 
-                        }
-                    }
-                }));
-            });
-        });
+        listUncovered.innerHTML = uncoveredHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">🎉 All Covered!</p>`;
+        listPartial.innerHTML = partialHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">No partial splits.</p>`;
+        listCovered.innerHTML = coveredHtml || `<p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">None claimed yet.</p>`;
     }
 
-    function formatReadableDate(dateStr) {
-        if (!dateStr) return '';
-        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
+    // Expose routing function globally so sidecards can open the modal safely
+    window.openTripModalFromSidebar = (encodedData) => {
+        const trip = JSON.parse(decodeURIComponent(encodedData));
+        window.openTripModal(trip);
+    };
 
-    function formatTwelveHour(timeString) {
-        if(!timeString) return '';
-        if(timeString === 'morning') return '9:00 AM';
-        if(timeString === 'evening') return '6:00 PM';
-        const [hourStr, minStr] = timeString.split(':');
-        let hour = parseInt(hourStr, 10);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        hour = hour % 12 || 12;
-        return `${hour}:${minStr} ${ampm}`;
-    }
-    window.refreshSidebarView = updateSidebarNeedsCoverList;
-
-    async function checkAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
-        adminLoginBtn.style.display = session ? 'none' : 'inline-block';
-        adminLogoutBtn.style.display = session ? 'inline-block' : 'none';
-        adminInstructions.style.display = session ? 'block' : 'none';
-        updateSidebarNeedsCoverList();
-        document.dispatchEvent(new CustomEvent('authChange', { detail: { isAdmin: !!session } }));
-    }
-    checkAuth();
-
-    adminLoginBtn.addEventListener('click', async () => {
-        const email = prompt("Admin Email:"); if (!email) return;
-        const password = prompt("Password:"); if (!password) return;
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message);
-        checkAuth();
-    });
-
-    adminLogoutBtn.addEventListener('click', async () => {
-        await supabase.auth.signOut(); checkAuth();
-    });
-
-    document.addEventListener('openTripModal', async (e) => {
-        activeTripData = e.detail;
-        let { tripTitle, status, claimedBy, notes, startTime, endTime, includeNeighbors, neighborStartDate, neighborEndDate } = activeTripData.extendedProps;
-        const sessionCheck = await supabase.auth.getSession();
-        const isAdmin = !!sessionCheck.data.session;
-
-        adminFormFields.style.display = 'none'; publicTripDetails.style.display = 'none';
-        friendClaimSection.style.display = 'none'; modalAdminActions.style.display = 'none';
-        neighborAlert.style.display = 'none'; neighborDateFields.style.display = 'none';
-
-        if(startTime === 'morning') startTime = '09:00';
-        if(startTime === 'evening') startTime = '18:00';
-        if(endTime === 'morning') endTime = '09:00';
-        if(endTime === 'evening') endTime = '18:00';
-
-        tripTitleInput.value = tripTitle || '';
-        tripStartDateInput.value = activeTripData.start;
-        tripEndDateInput.value = activeTripData.end;
-        tripStartTimeInput.value = startTime || '09:00';
-        tripEndTimeInput.value = endTime || '18:00';
-        tripNotesInput.value = notes || '';
+    // Open Modal Route Selector
+    window.openTripModal = (trip = null) => {
+        activeTripData = trip;
+        tripModal.setAttribute('open', 'true');
         
-        includeNeighborsInput.checked = !!includeNeighbors;
-        neighborStartDateInput.value = neighborStartDate || activeTripData.start;
-        neighborEndDateInput.value = neighborEndDate || activeTripData.end;
-
-        if (isAdmin && !!includeNeighbors) neighborDateFields.style.display = 'block';
-
-        claimStartDateInput.value = activeTripData.start;
-        claimEndDateInput.value = activeTripData.end;
-        claimStartDateInput.min = activeTripData.start; claimStartDateInput.max = activeTripData.end;
-        claimEndDateInput.min = activeTripData.start; claimEndDateInput.max = activeTripData.end;
+        // Reset forms and clean names
         friendNameInput.value = '';
+        friendUnclaimNameInput.value = '';
 
         if (isAdmin) {
-            document.getElementById('modal-title').textContent = activeTripData.id ? "✏️ Edit Trip" : "➕ Add Trip";
+            // Admin View Layout
             adminFormFields.style.display = 'block';
-            if (activeTripData.id) modalAdminActions.style.display = 'block';
-        } else {
-            document.getElementById('modal-title').textContent = status === 'claimed' ? `🐾 Booked by ${claimedBy}` : "📅 Coverage Manager";
-            if (includeNeighbors) {
-                document.getElementById('text-neighbor-start').textContent = formatReadableDate(neighborStartDate || activeTripData.start);
-                document.getElementById('text-neighbor-end').textContent = formatReadableDate(neighborEndDate || activeTripData.end);
-                neighborAlert.style.display = 'block';
+            publicTripDetails.style.display = 'none';
+            modalAdminActions.style.display = trip ? 'block' : 'none';
+            
+            document.getElementById('modal-title').innerText = trip ? '✏️ Edit Away Window' : '➕ Create Away Window';
+            
+            tripTitleInput.value = trip ? trip.title || '' : '';
+            tripStartDateInput.value = trip ? trip.start_date : '';
+            tripEndDateInput.value = trip ? trip.end_date : '';
+            tripStartTimeInput.value = trip ? trip.start_time || '09:00' : '09:00';
+            tripEndTimeInput.value = trip ? trip.end_time || '18:00' : '18:00';
+            
+            includeNeighborsInput.checked = trip ? !!trip.include_neighbors : false;
+            if (trip && trip.include_neighbors) {
+                neighborDateFields.style.display = 'block';
+                neighborStartDateInput.value = trip.neighbor_start_date || '';
+                neighborEndDateInput.value = trip.neighbor_end_date || '';
+            } else {
+                neighborDateFields.style.display = 'none';
+                neighborStartDateInput.value = '';
+                neighborEndDateInput.value = '';
             }
-            const detailsText = `<strong>Label:</strong> ${tripTitle || 'Away Block'}<br><strong>Range:</strong> ${formatReadableDate(activeTripData.start)} (${formatTwelveHour(startTime)}) to ${formatReadableDate(activeTripData.end)} (${formatTwelveHour(endTime)})<br><strong>Notes:</strong> ${notes || 'None'}`;
-            document.getElementById('modal-details-text').innerHTML = detailsText;
+            tripNotesInput.value = trip ? trip.notes || '' : '';
+        } else {
+            // Friend/Public View Layout
+            adminFormFields.style.display = 'none';
             publicTripDetails.style.display = 'block';
-            if (status !== 'claimed') friendClaimSection.style.display = 'block';
-        }
-        tripModal.setAttribute('open', true);
-    });
+            modalAdminActions.style.display = 'none';
+            
+            if (!trip) {
+                document.getElementById('modal-title').innerText = '🐈 Miso & Nimbus';
+                document.getElementById('modal-details-text').innerHTML = 'Please click on a highlighted trip block on the calendar to see trip details or book a sitting shift.';
+                friendClaimSection.style.display = 'none';
+                friendUnclaimSection.style.display = 'none';
+                return;
+            }
 
-    const closeModal = () => tripModal.removeAttribute('open');
+            document.getElementById('modal-title').innerText = trip.title || 'Cat Sitting Needed 🐾';
+            
+            let notesBlock = trip.notes ? `<div style="margin-top:0.75rem; font-style:italic; border-top:1px solid #e2e8f0; padding-top:0.5rem; color:#475569;"><strong>Notes:</strong> ${trip.notes}</div>` : '';
+            
+            document.getElementById('modal-details-text').innerHTML = `
+                <strong>Dates:</strong> ${formatReadableDate(trip.start_date)} to ${formatReadableDate(trip.end_date)}<br>
+                <strong>Time Window:</strong> ${formatTwelveHour(trip.start_time)} on departure date to ${formatTwelveHour(trip.end_time)} on return day.<br>
+                <strong>Status:</strong> ${trip.status === 'claimed' ? `🟢 Fully Booked by <strong>${trip.claimed_by}</strong>` : '🚨 Open for cover!' }
+                ${notesBlock}
+            `;
+
+            if (trip.include_neighbors) {
+                neighborAlert.style.display = 'block';
+                document.getElementById('text-neighbor-start').innerText = formatReadableDate(trip.neighbor_start_date || trip.start_date);
+                document.getElementById('text-neighbor-end').innerText = formatReadableDate(trip.neighbor_end_date || trip.end_date);
+            } else {
+                neighborAlert.style.display = 'none';
+            }
+
+            // Route Claim vs Unclaim layouts depending on database status
+            if (trip.status === 'claimed') {
+                friendClaimSection.style.display = 'none';
+                friendUnclaimSection.style.display = 'block';
+            } else {
+                friendClaimSection.style.display = 'block';
+                friendUnclaimSection.style.display = 'none';
+                claimStartDateInput.value = trip.start_date;
+                claimEndDateInput.value = trip.end_date;
+                claimStartDateInput.min = trip.start_date;
+                claimStartDateInput.max = trip.end_date;
+                claimEndDateInput.min = trip.start_date;
+                claimEndDateInput.max = trip.end_date;
+            }
+        }
+    };
+
+    // Close Modal Controller
+    const closeModal = () => { tripModal.removeAttribute('open'); activeTripData = null; };
     closeModalBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
 
-    async function validateDatesClear(start, end, skipId) {
-        if (new Date(end) < new Date(start)) { alert("End date cannot occur prior to start date."); return false; }
-        const { data: records } = await supabase.from('trips').select('id, start_date, end_date');
-        if (!records) return true;
-        const isOverlapping = records.some(row => {
-            if (skipId && row.id === skipId) return false;
-            return (start <= row.end_date && end >= row.start_date);
-        });
-        if (isOverlapping) { alert("⚠️ Overlap Blocked: Dates conflict with another saved entry."); return false; }
-        return true;
-    }
-
+    // Admin Save Block Logic
     adminSaveBtn.addEventListener('click', async () => {
-        const t = tripTitleInput.value.trim(), s = tripStartDateInput.value, e = tripEndDateInput.value, n = tripNotesInput.value.trim();
-        const st = tripStartTimeInput.value || '09:00'; const et = tripEndTimeInput.value || '18:00';
-        const incN = includeNeighborsInput.checked;
-        const ns = incN ? neighborStartDateInput.value : null; const ne = incN ? neighborEndDateInput.value : null;
-        
-        if (!(await validateDatesClear(s, e, activeTripData.id))) return;
+        const payload = {
+            title: tripTitleInput.value || 'Away Block',
+            start_date: tripStartDateInput.value,
+            end_date: tripEndDateInput.value,
+            start_time: tripStartTimeInput.value,
+            end_time: tripEndTimeInput.value,
+            include_neighbors: includeNeighborsInput.checked,
+            neighbor_start_date: includeNeighborsInput.checked ? neighborStartDateInput.value : null,
+            neighbor_end_date: includeNeighborsInput.checked ? neighborEndDateInput.value : null,
+            notes: tripNotesInput.value,
+            status: activeTripData ? activeTripData.status : 'uncovered',
+            claimed_by: activeTripData ? activeTripData.claimed_by : null
+        };
 
-        if (activeTripData.id) {
-            await supabase.from('trips').update({ title: t, start_date: s, end_date: e, notes: n, start_time: st, end_time: et, include_neighbors: incN, neighbor_start_date: ns, neighbor_end_date: ne }).eq('id', activeTripData.id);
-        } else {
-            await supabase.from('trips').insert([{ title: t, start_date: s, end_date: e, notes: n, status: 'unclaimed', start_time: st, end_time: et, include_neighbors: incN, neighbor_start_date: ns, neighbor_end_date: ne }]);
-        }
-        closeModal(); window.refreshCalendarData();
-    });
-
-    deleteTripBtn.addEventListener('click', async () => {
-        if (!activeTripData || !activeTripData.id) return;
-        if (!confirm("Are you sure you want to delete this trip block?")) return;
-        await supabase.from('trips').delete().eq('id', activeTripData.id);
-        closeModal(); window.refreshCalendarData();
-    });
-
-    /**
-     * Option B: Pre-filled Web Intent Calendar Sync
-     */
-    function triggerGoogleCalendarIntent(title, startDate, endDate, notes) {
-        const cleanString = (dStr) => dStr.replace(/-/g, '');
-        const startISO = cleanString(startDate);
-        
-        const nextDay = new Date(new Date(endDate + 'T00:00:00').setDate(new Date(endDate + 'T00:00:00').getDate() + 1));
-        const endISO = cleanString(nextDay.toISOString().split('T')[0]);
-        
-        const eventTitle = encodeURIComponent(`🐈 Miso & Nimbus Cat Sitting: ${title}`);
-        const eventDetails = encodeURIComponent(`${notes || 'No instructions provided.'}\n\n📋 Care Guides: https://miso-nimbus-vault.vercel.app`);
-        
-        const intentUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startISO}/${endISO}&details=${eventDetails}&sf=true&output=xml`;
-        window.open(intentUrl, '_blank');
-    }
-
-    /**
-     * Option A: Interactive Google OAuth2 API client
-     */
-    function handleGoogleOAuthSync(title, startDate, endDate, notes) {
-        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
-        const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-
-        if (CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
-            alert("Google OAuth2 client credentials not provisioned. Opening Option B quick-link instead!");
-            triggerGoogleCalendarIntent(title, startDate, endDate, notes);
+        if (!payload.start_date || !payload.end_date) {
+            alert('Please select both your start and end dates.');
             return;
         }
 
-        const client = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            callback: async (tokenResponse) => {
-                if (tokenResponse.error !== undefined) return;
+        let queryError;
+        if (activeTripData && activeTripData.id) {
+            const { error } = await supabase.from('trips').update(payload).eq('id', activeTripData.id);
+            queryError = error;
+        } else {
+            const { error } = await supabase.from('trips').insert([payload]);
+            queryError = error;
+        }
 
-                const eventPayload = {
-                    'summary': `🐈 Miso & Nimbus Cat Sitting: ${title}`,
-                    'description': `${notes || ''}\n\n📋 Care Guide URL: https://miso-nimbus-vault.vercel.app`,
-                    'start': { 'date': startDate, 'timeZone': 'Europe/London' },
-                    'end': { 'date': endDate, 'timeZone': 'Europe/London' }
-                };
+        if (queryError) {
+            alert('Database Save failed: ' + queryError.message);
+        } else {
+            closeModal();
+            updateSidebarNeedsCoverList();
+            if (window.refreshCalendarData) window.refreshCalendarData();
+        }
+    });
 
-                try {
-                    const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${tokenResponse.access_token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(eventPayload)
-                    });
-                    if (res.ok) alert("🎉 Success! This shifting slot has been synced to your calendar.");
-                } catch (err) {
-                    triggerGoogleCalendarIntent(title, startDate, endDate, notes);
-                }
-            }
-        });
-        client.requestAccessToken({ prompt: 'consent' });
+    // Admin Delete Block Logic
+    deleteTripBtn.addEventListener('click', async () => {
+        if (!activeTripData || !activeTripData.id) return;
+        if (!confirm('Are you absolutely sure you want to delete this trip window?')) return;
+
+        const { error } = await supabase.from('trips').delete().eq('id', activeTripData.id);
+        if (error) {
+            alert('Error deleting block: ' + error.message);
+        } else {
+            closeModal();
+            updateSidebarNeedsCoverList();
+            if (window.refreshCalendarData) window.refreshCalendarData();
+        }
+    });
+
+    // Friend CLAIM Logic
+    friendClaimBtn.addEventListener('click', async () => {
+        const friendName = friendNameInput.value.trim();
+        if (!friendName) {
+            alert('Please enter your name to book this shift!');
+            return;
+        }
+
+        // Logic checks for splitting/partial booking dates
+        const chosenStart = claimStartDateInput.value;
+        const chosenEnd = claimEndDateInput.value;
+        
+        let targetStatus = 'claimed';
+        if (chosenStart > activeTripData.start_date || chosenEnd < activeTripData.end_date) {
+            targetStatus = 'partial'; // Partial flag if friend only splits a piece
+        }
+
+        const { error } = await supabase.from('trips')
+            .update({
+                status: targetStatus,
+                claimed_by: friendName,
+                // Update dates to match assignment if partial split strategy is deployed
+            })
+            .eq('id', activeTripData.id);
+
+        if (error) {
+            alert('Booking could not be verified: ' + error.message);
+            return;
+        }
+
+        // Handle Calendar Sync preferences
+        const selectedSyncMethod = document.querySelector('input[name="sync-method"]:checked').value;
+        if (selectedSyncMethod === 'intent') {
+            triggerGoogleCalendarWebIntent(activeTripData, friendName);
+        } else {
+            triggerOAuthCalendarInsertion(activeTripData, friendName);
+        }
+
+        closeModal();
+        updateSidebarNeedsCoverList();
+        if (window.refreshCalendarData) window.refreshCalendarData();
+    });
+
+    // Friend UNCLAIM/CANCEL Logic
+    friendUnclaimBtn.addEventListener('click', async () => {
+        const verifyName = friendUnclaimNameInput.value.trim();
+        if (!verifyName) {
+            alert('Please enter your name exactly as booked to cancel this shift.');
+            return;
+        }
+
+        if (verifyName.toLowerCase() !== activeTripData.claimed_by.toLowerCase()) {
+            alert(`Name match fail. This block is currently claimed by "${activeTripData.claimed_by}". Please double check your spelling.`);
+            return;
+        }
+
+        if (!confirm('Confirm you want to cancel your shift? This will reopen the slot for other friends immediately.')) return;
+
+        const { error } = await supabase.from('trips')
+            .update({
+                status: 'uncovered',
+                claimed_by: null
+            })
+            .eq('id', activeTripData.id);
+
+        if (error) {
+            alert('Could not cancel shift: ' + error.message);
+        } else {
+            alert('Shift canceled successfully. Thank you!');
+            closeModal();
+            updateSidebarNeedsCoverList();
+            if (window.refreshCalendarData) window.refreshCalendarData();
+        }
+    });
+
+    // Option B: Google Calendar Direct URL generation helper
+    function triggerGoogleCalendarWebIntent(trip, friendName) {
+        const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+        const title = encodeURIComponent(`🐾 Cat Sitting for Miso & Nimbus`);
+        
+        const sDate = trip.start_date.replace(/-/g, '');
+        const eDate = trip.end_date.replace(/-/g, '');
+        // Formats to Google UTC string standards (YYYYMMDD)
+        const dates = `${sDate}/${eDate}`;
+
+        let details = `Hi ${friendName}, thank you for helping out!\n\n`;
+        details += `🐱 Miso & Nimbus Feeding Routine:\nCheck the main care link on the dashboard.\n`;
+        if (trip.include_neighbors) {
+            details += `\n🏠 NOTE: Cecil & Chutney also need care this window! See guide-cecil-chutney.html\n`;
+        }
+        if (trip.notes) details += `\nCustom Instructions: ${trip.notes}`;
+
+        const url = `${base}&text=${title}&dates=${dates}&details=${encodeURIComponent(details)}&sf=true&output=xml`;
+        window.open(url, '_blank');
     }
 
-    friendClaimBtn.addEventListener('click', async () => {
-        const name = friendNameInput.value.trim(), cs = claimStartDateInput.value, ce = claimEndDateInput.value;
-        if (!name) { alert("Please supply your name."); return; }
+    // Option A: Full OAuth Injection Placeholder Interface
+    function triggerOAuthCalendarInsertion(trip, friendName) {
+        alert("Authentication initialization sequence. Option A will log into Google API and insert direct calendar details directly.");
+        // OAuth execution code hooks in here
+    }
 
-        const parentStart = activeTripData.start, parentEnd = activeTripData.end;
-        const pProps = activeTripData.extendedProps;
-
-        if (cs === parentStart && ce === parentEnd) {
-            await supabase.from('trips').update({ status: 'claimed', claimed_by: name }).eq('id', activeTripData.id);
+    // Auth Simulation toggles for setting Admin state
+    adminLoginBtn.addEventListener('click', () => {
+        const password = prompt("Enter Admin Secure Verification Token:");
+        if (password === "misonimbus") { // Change to your password configuration
+            isAdmin = true;
+            adminLoginBtn.style.display = 'none';
+            adminLogoutBtn.style.display = 'inline-block';
+            adminInstructions.style.display = 'block';
+            alert("Admin session authenticated.");
         } else {
-            await supabase.from('trips').delete().eq('id', activeTripData.id);
-            if (cs > parentStart) {
-                const prevEnd = new Date(new Date(cs + 'T00:00:00').setDate(new Date(cs + 'T00:00:00').getDate() - 1)).toISOString().split('T')[0];
-                await supabase.from('trips').insert([{ title: pProps.tripTitle, start_date: parentStart, end_date: prevEnd, status: 'unclaimed', notes: pProps.notes, start_time: pProps.startTime, end_time: '18:00', include_neighbors: pProps.includeNeighbors, neighbor_start_date: pProps.neighborStartDate, neighbor_end_date: pProps.neighborEndDate }]);
-            }
-            await supabase.from('trips').insert([{ title: pProps.tripTitle, start_date: cs, end_date: ce, status: 'claimed', claimed_by: name, notes: pProps.notes, start_time: '09:00', end_time: '18:00', include_neighbors: pProps.includeNeighbors, neighbor_start_date: pProps.neighborStartDate, neighbor_end_date: pProps.neighborEndDate }]);
-            
-            if (ce < parentEnd) {
-                const nextStart = new Date(new Date(ce + 'T00:00:00').setDate(new Date(ce + 'T00:00:00').getDate() + 1)).toISOString().split('T')[0];
-                await supabase.from('trips').insert([{ title: pProps.tripTitle, start_date: nextStart, end_date: parentEnd, status: 'unclaimed', notes: pProps.notes, start_time: '09:00', end_time: pProps.endTime, include_neighbors: pProps.includeNeighbors, neighbor_start_date: pProps.neighborStartDate, neighbor_end_date: pProps.neighborEndDate }]);
-            }
+            alert("Invalid password clearance credentials.");
         }
-
-        // Fire calendar integration sync paths based on radio settings
-        const syncMethod = document.querySelector('input[name="sync-method"]:checked').value;
-        const finalTitle = pProps.tripTitle || 'Away Block';
-        const finalNotes = pProps.notes || '';
-
-        if (syncMethod === 'oauth') {
-            handleGoogleOAuthSync(finalTitle, cs, ce, finalNotes);
-        } else {
-            triggerGoogleCalendarIntent(finalTitle, cs, ce, finalNotes);
-        }
-
-        closeModal(); 
-        window.refreshCalendarData();
     });
+
+    adminLogoutBtn.addEventListener('click', () => {
+        isAdmin = false;
+        adminLoginBtn.style.display = 'inline-block';
+        adminLogoutBtn.style.display = 'none';
+        adminInstructions.style.display = 'none';
+        alert("Logged out of Admin Session.");
+    });
+
+    // Date Helper Formatting Functions
+    function formatReadableDate(dateString) {
+        if (!dateString) return '';
+        const options = { month: 'short', day: 'numeric' };
+        const dateObj = new Date(dateString + 'T00:00:00');
+        return dateObj.toLocaleDateString('en-US', options);
+    }
+
+    function formatTwelveHour(timeString) {
+        if (!timeString) return '9:00 AM';
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    // Init Core State
+    updateSidebarNeedsCoverList();
 });

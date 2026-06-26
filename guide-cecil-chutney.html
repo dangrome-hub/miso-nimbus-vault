@@ -1,27 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cecil & Chutney - Care Routine</title>
+    <title>Care Guide: Cecil & Chutney (34a)</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding-bottom: 3rem;
+        }
+        .guide-header {
+            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .guide-header h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            font-weight: 800;
+        }
+        .guide-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .alert-box {
+            background-color: #fff7ed;
+            border-left: 4px solid #ea580c;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            color: #9a3412;
+            font-size: 0.95rem;
+        }
+        .heat-box {
+            background-color: #fef2f2;
+            border: 1px dashed #fca5a5;
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        .routine-step {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        .highlight-text {
+            font-weight: 600;
+            color: #db2777;
+        }
+    </style>
 </head>
 <body>
+
+    <header class="container-fluid guide-header">
+        <h1>🏠 Apartment 34a</h1>
+        <p>Cecil & Chutney Care Instructions</p>
+    </header>
+
     <main class="container">
-        <article class="care-page-container" style="border-top: 6px solid #ec4899 !important; padding: 2rem; margin-top: 2rem;">
-            <a href="index.html" class="back-nav-btn">← Back to Holiday Coverage Calendar</a>
-            <hr>
-            <h2 style="color: #ec4899; font-weight: 700; margin-bottom: 0.5rem;">🔑 Cecil & Chutney Care Guide (34a)</h2>
-            <p style="color: #64748b; font-size: 0.9rem;">Instructions for checking on the upstairs neighbors' cats.</p>
-            <hr>
-            <h3>📋 Feeding Routine</h3>
-            <p><strong>Midday Check-In:</strong> Head directly up to flat 34a (immediately above us). Check their food bowls once a day. Top up with dry kibble if empty.</p>
-            <p><strong>Water:</strong> Dump out and refresh the shallow water dish with fresh sink water.</p>
-            <h3>🚪 Access</h3>
-            <p>Use the secondary gold key on the shared care ring to enter their front door.</p>
-        </article>
+
+        <!-- 1. FEEDING ROUTINE -->
+        <section class="section-card">
+            <div class="section-title">🥣 Feeding Schedule</div>
+            <p>The boys are fed twice a day: once in the <strong>morning</strong> and once in the <strong>evening</strong>.</p>
+            <ul>
+                <li class="routine-step">
+                    <strong>Wet Food:</strong> Take <span class="highlight-text">one pouch of wet food</span> and split it evenly between their two primary bowls.
+                </li>
+                <li class="routine-step">
+                    <strong>Dry Food:</strong> Shake a little bit of dry kibble into their shared middle bowl—just enough to <span class="highlight-text">lightly cover the bottom surface</span> of the dish.
+                </li>
+            </ul>
+        </section>
+
+        <!-- 2. LITTER BOX -->
+        <section class="section-card">
+            <div class="section-title">💩 Litter Box Maintenance</div>
+            <ul>
+                <li class="routine-step">
+                    <strong>Location:</strong> Their main litter box is located inside the <strong>downstairs bathroom</strong>.
+                </li>
+                <li class="routine-step">
+                    <strong>Routine:</strong> Please scoop the box once a day. You can <span class="highlight-text">drop the waste directly into the toilet</span> and flush it away instantly. No bags needed!
+                </li>
+            </ul>
+        </section>
+
+        <!-- 3. CONDITIONAL HEAT MANAGEMENT -->
+        <section class="section-card">
+            <div class="section-title">☀️ Summer Weather Protocols</div>
+            <p style="margin-bottom: 0.5rem;">
+                We worry about the cats overheating in the summer. Please keep an eye on the forecast:
+            </p>
+            
+            <div class="heat-box">
+                <h5 style="color: #dc2626; font-size: 1rem; font-weight: 700; margin-top: 0; margin-bottom: 0.5rem;">
+                    🌡️ IF IT EXCEEDS +28°C DURING THE DAY:
+                </h5>
+                <ul style="margin-bottom: 0;">
+                    <li class="routine-step" style="color: #991b1b;">
+                        <strong>🌅 In the Morning:</strong> Shut all windows completely tight and pull the window blinds mostly down to lock out the baking daytime sun.
+                    </li>
+                    <li class="routine-step" style="color: #991b1b;">
+                        <strong>🌇 In the Evening:</strong> Open the windows up and raise the blinds to allow cooler night air to circulate through the flat.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 4. TERRACE & BALCONY RULES -->
+        <section class="section-card">
+            <div class="section-title">🌅 Terrace & Balcony Rules (For Myrtle)</div>
+            <p>Myrtle, you are more than welcome to hang out up on the terrace and enjoy the outdoor space! If you do, the cats are very welcome to join you outside, but please follow these strict safety boundaries:</p>
+            
+            <div class="alert-box">
+                <strong>🔒 When you are not actively up there:</strong> The balcony window must remain completely closed and locked at all times.
+            </div>
+
+            <div class="alert-box" style="background-color: #fdf2f8; border-left-color: #db2777; color: #9d174d;">
+                <strong>🚪 The Top Room Door:</strong> Keep the door leading to the top room closed by default, as that room gets far too hot for the cats. It is totally fine to leave it open while you are out on the terrace with them, but it must be closed when you leave.
+            </div>
+
+            <div class="alert-box" style="background-color: #f0fdf4; border-left-color: #16a34a; color: #166534;">
+                <strong>🏃‍♂️ Before Leaving the Apartment:</strong> You must herd both cats back downstairs into the main flat, ensure they are inside, and securely shut both the balcony window and the top room door.
+            </div>
+
+            <p style="margin-top: 1rem; font-size: 0.9rem; font-style: italic; color: #475569;">
+                <strong>😏 The Secret Recall Trick:</strong> If Cecil or Chutney are playing hard to get and won't come inside, give their bag of food or treat box a loud, energetic shake. They will come running inside instantly!
+            </p>
+        </section>
+
+        <!-- FOOTER CLOSING NOTE -->
+        <section class="section-card" style="background: #fdf2f8; border-color: #fbcfe8; text-align: center; margin-bottom: 0;">
+            <p style="color: #9d174d; font-weight: 600; margin-bottom: 0;">
+                Thank you so much for looking after the upstairs crew! Drop us a message on WhatsApp if you run into any questions or need anything. 🙂
+            </p>
+        </section>
+
     </main>
-</body>
-</html>
+
+</body></html>

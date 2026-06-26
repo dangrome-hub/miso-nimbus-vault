@@ -152,7 +152,7 @@ async function initCalendar() {
             const matchingTrip = globalTripsData.find(trip => cellDateStr >= trip.start_date && cellDateStr <= trip.end_date);
 
             if (matchingTrip) {
-                let imgFile = matchingTrip.include_neighbors ? "Cecil & Chutney.png" : "Miso & Nimbus.png";
+                let imgFile = matchingTrip.include_neighbors ? "Cecil & Chutney.png" : "Miso & Nimbus.jpg";
                 arg.el.style.backgroundImage = `url('${imgFile}')`;
                 arg.el.style.backgroundSize = 'cover';
                 arg.el.style.backgroundPosition = 'center';

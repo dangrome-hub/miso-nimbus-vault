@@ -1,27 +1,186 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cecil & Chutney - Care Routine</title>
+    <title>Care Guide: Miso & Nimbus</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding-bottom: 3rem;
+        }
+        .guide-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .guide-header h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            font-weight: 800;
+        }
+        .guide-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .alert-box {
+            background-color: #fff1f2;
+            border-left: 4px solid #f43f5e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            color: #9f1239;
+            font-size: 0.95rem;
+        }
+        .emergency-box {
+            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.2);
+        }
+        .emergency-box h4 {
+            color: white;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .credential-tag {
+            background: #f1f5f9;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            display: inline-block;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            margin-top: 0.25rem;
+        }
+        .routine-step {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        .highlight-text {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+    </style>
 </head>
 <body>
+
+    <header class="container-fluid guide-header">
+        <h1>🐱 Miso & Nimbus</h1>
+        <p>Your Ultimate Flat & Cat Care Guide</p>
+    </header>
+
     <main class="container">
-        <article class="care-page-container" style="border-top: 6px solid #ec4899 !important; padding: 2rem; margin-top: 2rem;">
-            <a href="index.html" class="back-nav-btn">← Back to Holiday Coverage Calendar</a>
+        
+        <section class="emergency-box">
+            <h4>🚨 In An Emergency</h4>
+            <p style="margin-bottom: 0.75rem;">Full vet details are printed on a physical paper sheet on the front of the fridge. If you cannot reach us, please contact our clinic straight away:</p>
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                <strong>Clinic Name:</strong> Village Vet (Hampstead)<br>
+                <strong>Phone Line:</strong> <a href="tel:02077944948" style="color: #fff; text-decoration: underline; font-weight: 700;">020 7794 4948</a>
+            </div>
+        </section>
+
+        <section class="section-card">
+            <div class="section-title">⚠️ Things to Watch Out For</div>
+            <div class="alert-box">
+                <strong>🚪 Front Door Runners:</strong> Both cats have a strong habit of lurking right near the front door. Try not to leave it open or ajar for any extended period, or they will make a break for it down the hall!
+            </div>
+            <div class="alert-box" style="background-color: #fff7ed; border-left-color: #f97316; color: #9a3412;">
+                <strong>👣 Foot Hazards:</strong> They love weaving directly around your feet and shins while you walk. Keep a close eye out on the floor—especially when navigating the stairs or busy inside the kitchen.
+            </div>
+        </section>
+
+        <section class="section-card">
+            <div class="section-title">🥣 Feeding Schedule & Prep</div>
+            <p>They eat <strong>three times a day</strong>. Please try to space their meals roughly <strong>7 hours apart</strong>.</p>
+            
+            <ul>
+                <li class="routine-step"><strong>Portion Size:</strong> Each cat gets exactly <span class="highlight-text">one pouch (65g)</span> per meal. If they seem noticeably ravenous across the day, you can offer them one extra booster pouch to share between them.</li>
+                <li class="routine-step"><strong>Food Prep Hack:</strong> To warm the food up properly, pop the sealed pouches straight into a metal bowl, pour boiling water over them, and let them sit for <span class="highlight-text">90 seconds</span> before cutting them open.</li>
+                <li class="routine-step"><strong>Equipment:</strong> Clean plates are stacked and ready in the drawer situated right next to the fridge.</li>
+                <li class="routine-step"><strong>💊 Miso's Morning Pill:</strong> Miso needs a pill in the morning mixed with his food. If he turns his nose up at it, grab the freeze-dried treats from the counter, hollow out/stuff the pill safely inside a few of them, and hand them over—he will usually eat them right up without noticing.</li>
+            </ul>
+        </section>
+
+        <section class="section-card">
+            <div class="section-title">🧶 Play & Cuddles</div>
+            <ul>
+                <li class="routine-step"><strong>Energy Levels:</strong> They are absolute high-energy maniacs first thing in the morning and late at night, but they predictably crash and snooze heavily from around <span class="highlight-text">11:00 AM to 6:00 PM</span>.</li>
+                <li class="routine-step"><strong>Toys:</strong> All of their toys live inside the media cabinet stored underneath the main TV.</li>
+                <li class="routine-step"><strong>Boundaries:</strong> When they are completely hyper, give them their own space. When they are sleepy, they love deep cuddles. If they ever nip at you, simply redirect their attention by tossing a toy.</li>
+            </ul>
+        </section>
+
+        <section class="section-card">
+            <div class="section-title">🏠 House Operations</div>
+            
+            <p><strong>🌐 Wireless Network:</strong><br>
+                Network ID: <span class="credential-tag">Everyday I'm Bufferin</span><br>
+                Password: <span class="credential-tag">J'gorgeouis34</span>
+            </p>
+
             <hr>
-            <h2 style="color: #ec4899; font-weight: 700; margin-bottom: 0.5rem;">🔑 Cecil & Chutney Care Guide (34a)</h2>
-            <p style="color: #64748b; font-size: 0.9rem;">Instructions for checking on the upstairs neighbors' cats.</p>
-            <hr>
-            <h3>📋 Feeding Routine</h3>
-            <p><strong>Midday Check-In:</strong> Head directly up to flat 34a (immediately above us). Check their food bowls once a day. Top up with dry kibble if empty.</p>
-            <p><strong>Water:</strong> Dump out and refresh the shallow water dish with fresh sink water.</p>
-            <h3>🚪 Access</h3>
-            <p>Use the secondary gold key on the shared care ring to enter their front door.</p>
-        </article>
+
+            <p><strong>💡 Lights & Blinds:</strong><br>
+                The master white buttons mounted by the front door and directly at the bedside control all light channels. Hold any active switch down to dim, and release when you like the level. For the automated blinds, a single clean tap of the Up or Down button is all it takes.
+            </p>
+
+            <p><strong>🍳 Kitchen Gear:</strong><br>
+                Feel free to use whichever pans you prefer. The black carbon steel ones are amazing to cook with but require a bit of care (<span class="highlight-text">no dish soap, dry them with a towel immediately</span> to prevent rust). For your everyday chopping tasks, the solid all-black knife is your best choice. The induction hob runs best at levels 5–7; it takes a brief moment to catch up, but it gets seriously hot!
+            </p>
+
+            <p><strong>📺 Music & Television:</strong><br>
+                Download the <span class="highlight-text">WiiM app</span> onto your phone to easily stream music throughout the entire house. For the main TV, pick up the white remote to manage all streaming apps. If the audio output ever starts crackling, grab the black remote and simply cycle the power button on the receiver.
+            </p>
+
+            <p><strong>💩 Litter Box:</strong><br>
+                One clean scoop per day is plenty. Clean replacement bags are stored in the second island drawer on the left side. Tie the filled waste bags up tightly and toss them directly into the large black wheelie bin located outside.
+            </p>
+        </section>
+
+        <section class="section-card" style="background: #f0fdf4; border-color: #bbf7d0; text-align: center; margin-bottom: 0;">
+            <p style="color: #166534; font-weight: 600; margin-bottom: 0.5rem;">
+                🛑 One small but important thing: please close doors carefully. The cats love darting through gaps and are very easy to accidentally catch. Mind your feet too!
+            </p>
+            <p style="color: #166534; margin-bottom: 0; font-size: 0.95rem;">
+                Make the absolute most of the bath and the coffee machine! Text or message either of us on WhatsApp at any hour if you need anything at all. Thank you so much! 🙂
+            </p>
+        </section>
+
     </main>
-</body>
-</html>
+
+</body></html>
